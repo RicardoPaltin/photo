@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+
+    <head>
+        <meta charset="utf-8">
+        <title>JnjSite.com: taking photo from camera</title>
+    </head>
+
+    <body>
+        <h1>JnjSite.com: taking photo from camera</h1>
+        <p id="errorTxt"></p>
+        <div>
+            <video id="video" playsinline autoplay></video>
+            <canvas id="canvas_imagenCapturada"></canvas>
+        </div>
+        <button id="btnCapturar">Capture</button>
+        <button id="btnDownloadImage">Download captured image</button>
+        <script type="text/javascript">
+
+
+            var videoWidth = 400;
+            var videoHeight = 200;
+            var videoTag = document.getElementById('video');
+            var canvasTag = document.getElementById('canvas_imagenCapturada');
+            var btnCapturar = document.getElementById("btnCapturar");
+            var btnDownloadImage = document.getElementById("btnDownloadImage");
+
+
+            videoTag.setAttribute('width', videoWidth);
+            videoTag.setAttribute('height', videoHeight);
+            canvasTag.setAttribute('width', videoWidth);
+            canvasTag.setAttribute('height', videoHeight);
+
+
+            window.onload = () => {
+                navigator.mediaDevices.getUserMedia({
+                    audio: false,
+                    video: {
+                        width: videoWidth,
+                        height: videoHeight
+                    }
+                }).then(stream => {
+                    videoTag.srcObject = stream;
+                }).catch(e => {
+                    document.getElementById('errorTxt').innerHTML = 'ERROR: ' + e.toString();
+                });
+                var canvasContext = canvasTag.getContext('2d');
+                btnCapturar.addEventListener("click", () => {
+                    canvasContext.drawImage(videoTag, 0, 0, videoWidth, videoHeight);
+                });
+                btnDownloadImage.addEventListener("click", () => {
+                    var link = document.createElement('a');
+                    link.download = 'capturedImage.png';
+                    link.href = canvasTag.toDataURL();
+                    link.click();
+                });
+            };
+        </script>
+    </body>
+
+</html>
